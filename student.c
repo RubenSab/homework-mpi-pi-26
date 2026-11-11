@@ -64,4 +64,5 @@ double estimate_pi(int num_tosses, int rank, int size) {
 		return num_hits / (double)num_tosses;
 	}
 	return 0;
+
 }
