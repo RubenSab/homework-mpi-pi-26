@@ -11,19 +11,14 @@ static double get_rand_minus_one_one(void) {
  * MPI is already initialized; rank 0 prints the returned estimate.
  */
 double estimate_pi(int num_tosses, int rank, int size) {
-    long local_hits = 0;
     long local_tosses = num_tosses/size;
-    long remainder = num_tosses % size;
-    if (rank < remainder) {
-        local_tosses++;
-    }
+    local_tosses += rank < (num_tosses % size);
     srand(rank);
-    for (long toss = 0; toss < local_tosses; toss++) {
+    long local_hits = 0;
+        for (long toss = 0; toss < local_tosses; toss++) {
         double x = get_rand_minus_one_one();
         double y = get_rand_minus_one_one();
-        if (x*x + y*y <= 1) {
-            local_hits++;
-        }
+        local_hits += (x*x + y*y <= 1);
     }
     long num_hits = 0;
     MPI_Reduce(
@@ -37,5 +32,5 @@ double estimate_pi(int num_tosses, int rank, int size) {
     );
     if (rank == 0)
         return (double)(4.0 * num_hits) / (double)num_tosses;
-    return 0.0;   /* only rank 0's value is used by the harness */
+    return 0.0;
 }
