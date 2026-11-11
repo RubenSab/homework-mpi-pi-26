@@ -61,7 +61,8 @@ double estimate_pi(int num_tosses, int rank, int size) {
 			double y = aggregated_darts_y[i];
 			num_hits += (x*x + y*y <= 1);
 		}
-		return num_hits / (double)num_tosses;
+		long total_tosses = (long)num_tosses * size;
+		return 4 * num_hits / (double)total_tosses;
 	}
 	return 0;
 
