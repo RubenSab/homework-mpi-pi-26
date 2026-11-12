@@ -1,6 +1,9 @@
 #include "student.h"
 #include <stdlib.h>
 #include <mpi.h>
+#pragma GCC push_options
+#pragma GCC optimize ("O3", "unroll-loops")
+#pragma GCC target ("avx2", "fma")
 
 static double get_rand_minus_one_one(void) {
     return 2 * (rand() / (double)RAND_MAX) - 1;
@@ -14,7 +17,7 @@ double estimate_pi(int num_tosses, int rank, int size) {
     long local_tosses = num_tosses/size + (rank < (num_tosses % size)); // note: this is ok if done branchless because int math is faster than if
     srand(rank);
     long local_hits = 0;
-        for (long toss = 0; toss < local_tosses; toss++) {
+    for (long toss = 0; toss < local_tosses; toss++) {
         double x = get_rand_minus_one_one();
         double y = get_rand_minus_one_one();
         local_hits += (x*x + y*y <= 1);
@@ -33,3 +36,5 @@ double estimate_pi(int num_tosses, int rank, int size) {
         return (double)(4.0 * num_hits) / (double)num_tosses; // note: this is NOT ok if done branchless because float/double math is slower than if
     return 0.0;
 }
+
+#pragma GCC pop_options
